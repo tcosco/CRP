@@ -1,1 +1,1875 @@
 * CRP MLM analysis *
+
+
+*****************************************************************************************************
+* adapting Rishi;s child adversity code * 
+*****************************************************************************************************
+*****SES RISK FACTORS**********
+
+**FATHER SOCIAL CLASS**
+
+
+*Give missing code for particpants with unknown social class*/
+recode FSC50  60=.
+recode FSC57  60=. 2=.
+recode FSC61  60=.
+
+*Note: missing values of father's social class variable replaced with those available in 1957 & 1961*/
+gen class2x=FSC50
+replace class2x=FSC57 if class2x==.
+replace class2x=FSC61 if class2x==.
+
+label define class2x 10 "Professional" 20"Intermediate" 30"Skilled Non-Manual" 35" Skilled manual" 40"Partly Skilled" 50"Unskilled" 
+label values class2x class2x
+tab class2x,m
+
+** Dichotomized Father's Social Class
+recode class2x 10=0 20=0 30=0 35=0 40=1 50=1, gen(sclas)
+label define sclas 0"High" 1"Low"
+label values sclas
+codebook sclas
+tab sclas,m
+
+
+**HOUSE TENURE (Private landlord vs. other**
+codebook OWN48
+replace OWN48=. if OWN48==-9899 
+recode OWN48 1=0 2=0 3=0 4=1 5=., gen(own)
+tab own,m
+
+
+*LACK OF HOUSEHOLD AMENITIEs *
+
+*Give missing code for particpants with unknown responses*/
+recode AML48 -9899=.
+recode AML57 -9899=.
+recode AML61 -9899=.
+
+*Note: missing values of home amenities replaced with those available in 1957 & 1961
+gen amen=AML48
+replace amen= AML57 if amen==.
+replace amen= AML61 if amen==.
+
+tab amen,m
+
+label define amen 0"Lacks 0 amenities" 1"Lacks 1 amenity" 2"Lacks 2 amenities" 3"Lacks 3 amenities"
+label values amen amen
+
+tab amen,m
+
+*Dichotomized lacks amenities*
+recode amen 0=0 1=0 2=0 3=1, gen(amen2)
+label define amen2 0"Lacks 0-2 amenities" 1"Lacks 3 amenities"
+label values amen2 amen2
+tab amen2,m
+
+
+*HOUSEHOLD CROWDING
+*CROWDING 1946*
+
+**Definition: More than 2 people living in the same room *
+
+replace CROW46=. if CROW46==-9899
+replace CROW46=. if CROW46==0
+
+gen crowd1946=.
+replace crowd1946=0 if CROW46<=4 & CROW46!=.
+replace crowd1946=1 if CROW46>4 & CROW46!=.
+
+label define crowd1946 0"Not overcrowded" 1"Crowded" 
+label values crowd1946 crowd1946
+
+
+* CROWDING 1948 *
+**Definition: More than 2 people living in the same room
+
+replace CROW48=. if CROW48==-9899
+gen crowd1948=.
+replace crowd1948=0 if CROW48<=4 & CROW48!=.
+replace crowd1948=1 if CROW48>4 & CROW48!=.
+
+label define crowd1948 0"Not overcrowded" 1"Crowded" 
+label values crowd1948 crowd1948
+tab crowd1948,m
+
+
+* CROWDING 1950 * 
+**Definition: More than 2 people living in the same room
+
+replace CROW50=. if CROW50==-9899
+replace CROW50=. if CROW50==-9799
+gen crowd1950=.
+replace crowd1950=0 if CROW50<=4 & CROW50!=.
+replace crowd1950=1 if CROW50>4 & CROW50!=.
+
+label define crowd1950 0"Not overcrowded" 1"Crowded" 
+label values crowd1950 crowd1950
+
+
+*CROWDING 1952*
+**Definition: More than 2 people living in the same room*
+
+replace CROW52=. if CROW52==-9899
+replace CROW52=. if CROW52==-9999
+gen crowd1952=.
+replace crowd1952=0 if CROW52<=4 & CROW52!=.
+replace crowd1952=1 if CROW52>4 & CROW52!=.
+
+label define crowd1952 0"Not overcrowded" 1"Crowded" 
+label values crowd1952 crowd1952
+tab crowd1952,m
+
+*CROWDING 1954*
+**Definition: More than 2 people living in the same room*
+
+replace CROW54=. if CROW54==-9899
+replace CROW54=. if CROW54==-9799
+gen crowd1954=.
+replace crowd1954=0 if CROW54<=4 & CROW54!=.
+replace crowd1954=1 if CROW54>4 & CROW54!=.
+
+label define crowd1954 0"Not overcrowded" 1"Crowded" 
+label values crowd1954 crowd1954
+
+
+
+*/CROWDING 1957//*
+**Definition: More than 2 people living in the same room*
+
+replace CROW57=. if CROW57==-9899
+replace CROW57=. if CROW57==-9799
+gen crowd1957=.
+replace crowd1957=0 if CROW57<=4 & CROW57!=.
+replace crowd1957=1 if CROW57>4 & CROW57!=.
+
+label define crowd1957 0"Not overcrowded" 1"Crowded" 
+label values crowd1957 crowd1957
+tab crowd1957,m
+
+
+*//CROWDING SUMMARY- IMPUTE MISSING OBSERVATIONS//*
+gen crowd4654=crowd1946
+replace crowd4654=crowd1948 if crowd4654==.
+replace crowd4654=crowd1950 if crowd4654==.
+replace crowd4654=crowd1952 if crowd4654==.
+replace crowd4654=crowd1954 if crowd4654==.
+replace crowd4654=crowd1957 if crowd4654==.
+label define crowd4654 0"Not overcrowded" 1"Crowded" 
+label values crowd4654 crowd4654
+tab crowd4654,m
+rename crowd4654 crowd
+tab crowd,m
+
+
+*STATE OF REPAIR OF HOUSE**
+
+
+*Give missing code for particpants with unknown responses*
+replace REP50=. if REP50==-9899  |  REP50==-9799
+replace REP52=. if REP52==-9999 | REP52==-9899 | REP52==-9799 | REP52==0 | REP52==6
+replace REP57=. if REP57==-9999 | REP57==-9899 | REP52==-9799 
+
+gen reprs=REP50
+
+replace reprs= REP52 if reprs==.
+replace reprs= REP57 if reprs==.
+
+tab reprs,m
+label define reprs 1"Average" 2 "Very Good" 3"Bad"
+label values reprs  reprs 
+
+tab reprs,m
+
+** Dichotomized state of repair of the house
+recode reprs 1=0 2=0 3=1, gen(reprs2)
+label define reprs2 0"Av to v good" 1"Bad"
+label values reprs2 reprs2
+tab reprs2,m
+
+**CLEANLINESS OF CHILD**
+
+
+*/*Give missing code for particpants with unknown responses*/*
+replace CLC50=. if CLC50==-9899 | CLC50==-9799 
+replace CLC52=. if CLC52==-9999  | CLC52==-9899 | CLC52==-9799 
+replace CLC55=. if CLC55 ==-9999 | CLC55 ==-9899 | CLC55==-9299
+
+gen ccln=CLC50
+replace ccln=CLC52 if ccln==.
+replace ccln=CLC55 if ccln==.
+
+tab ccln,m
+
+codebook ccln
+recode ccln 1=2 2=1
+label define ccln 1"Most clean" 2 "Average" 3"Least clean"
+label values ccln ccln
+
+tab ccln,m
+
+*Dichotomized cleaniless of child
+recode ccln 1=0 2=0 3=1, gen(ccln2)
+label define ccln2 0"Most to av clean" 1"Least clean"
+label values ccln2 ccln2
+tab ccln2,m
+
+
+**CLEANLINESS OF HOUSE**
+
+
+*Give missing code for particpants with unknown responses*
+replace CLH50=. if CLH50==-9899 | CLH50==-9799 | CLH50==-9299 
+replace CLH52=. if CLH52==-9999  | CLH52==-9899 | CLH52==-9799 | CLH52==0
+replace CLH55=. if CLH55 ==-9999 | CLH55 ==-9899 | CLH55 ==-9799 | CLH55==-9299
+
+gen hcln=CLH50
+replace hcln=CLH52 if hcln==.
+replace hcln=CLH55 if hcln==.
+
+tab hcln,m
+
+codebook hcln
+recode hcln 1=2 2=1
+label define hcln 1"Most clean" 2 "Average" 3"Least clean"
+label values hcln hcln 
+
+tab hcln,m
+
+*Dichotomized cleaniless of house
+recode hcln 1=0 2=0 3=1, gen(hcln2)
+label define hcln2 0"Av to v good" 1"Bad"
+label values hcln2 hcln2
+tab hcln2,m
+
+
+**CONDITION OF CHILD'S CLOTHES*
+
+
+*Give missing code for particpants with unknown responses*/
+replace CLO50=. if CLO50==-9899 | CLO50==-9799 
+replace CLO52=. if CLO52==-9999  | CLO52==-9899 | CLO52==-9799 
+replace CLO55=. if CLO55 ==-9999 | CLO55 ==-9899 
+replace TCL57=. if TCL57==-9999 | TCL57==-9899
+
+recode CLO50 1=0 2=1
+recode CLO52 1=0 2=1
+recode CLO55 0=1 1=0
+recode TCL57 0=1 1=0
+
+gen clth=CLO50
+replace clth=CLO52 if clth==.
+replace clth=CLO55 if clth==.
+replace clth=TCL57 if clth==.
+tab clth,m
+
+label define clth 0"Satisfactory" 1 "Unsatisfactory" 
+label values clth clth
+tab clth,m
+
+**CONDITION OF CHILD'S SHOES
+
+
+replace SHO50=. if  SHO50==-9899 | SHO50==-9799 
+replace SHO52=. if SHO52==-9999  | SHO52==-9899 | SHO52==-9799 
+replace SHO55=. if SHO55 ==-9999 | SHO55 ==-9899 
+
+recode SHO50 1=0 2=1
+recode SHO52 1=0 2=1
+recode SHO55 0=1 1=0
+
+gen shoes=SHO50
+replace shoes= SHO52 if shoes==.
+replace shoes= SHO55 if shoes==.
+tab shoes,m
+
+label define shoes 0"Satisfactory" 1"Unsatisfactory" 
+label values shoes shoes
+tab shoes,m
+
+
+*CHILD'S CLOTHES & SHOES COMBINED*
+
+gen clsh=.
+replace clsh=1 if clth==1 | shoes==1
+replace clsh=0 if clth==0 & shoes==0
+replace clsh=. if clth==. | shoes==.
+label define clsh 0"Satisfactory" 1"Unsatisfactory" 
+label values clsh clsh
+tab clsh,m
+
+
+
+
+******PSYCHOSOCIAL RISK FACTORS**********
+
+**Child Maltreatment **** 
+gen maltrt=pamis89
+ codebook maltrt
+ replace maltrt=. if pamis89==999
+ replace maltrt=. if pamis89==9
+ tab maltrt,m
+ 
+ gen maltrt53 = maltrt
+ gen maltrt63 = maltrt
+ gen maltrt68 = maltrt
+ 
+ 
+ 
+
+
+
+** Teacher's estimate of parent's interest in child's school progress 1959
+gen tint=TINT59
+codebook tint
+replace tint=. if tint==-9999 | tint==-9899
+tab tint,m
+
+label define tint 1"Very interested" 2 "Average" 3"Little interest"
+label values tint tint
+
+tab tint,m
+
+**Dicotomized teacher's interest in primary/secondary education 1959
+recode tint  1=0 2=0 3=1, gen(tint2)
+label define tint2 0" Avge to v.interest" 1"Little interest"
+label values tint2 tint2
+
+tab tint2,m
+
+gen tint53 = tint2
+gen tint63 = tint2
+gen tint68 = tint2
+
+
+** Parent's interest in primary and secondary education 1959
+codebook parps
+recode parps  1=1 2=1 3=1 4=2 5=2 6=2 7=3 8=3 9=3, gen(pint)
+replace pint=. if pint==-9899 |  pint==-9999 | pint==-9799
+label define pint 1"Very interested" 2 "Average" 3"Little interest"
+label values pint pint
+
+tab pint,m
+
+**Dicotomized parent's interest in primary/secondary education 1959
+recode pint  1=0 2=0 3=1, gen(pint2)
+label define pint2 0" Avge to v.interest" 1"Little interest"
+label values pint2 pint2
+tab pint2,m
+
+gen pint53 = pint2
+gen pint63 = pint2
+gen pint68 = pin2
+
+** Father Psych Hx**
+
+gen fpsych=.
+replace fpsych=1 if evifc==1
+replace fpsych=0 if evifc>1 | evifc <1
+tab fpsych,m
+
+
+** Mother Psych Hx**
+gen mpsych=.
+replace mpsych=1 if evimc==1
+replace mpsych=0 if evimc>1 | evimc <1
+tab mpsych,m
+
+
+**Parent Psych Hx**
+gen psych=.
+replace psych=1 if fpsych==1 | mpsych==1
+replace psych=0 if fpsych==0 & mpsych==0
+replace psych=. if fpsych==. | mpsych==.
+tab psych,m
+
+gen psych53 = psych
+gen psych63 = psych
+gen psych68 = psych
+
+
+**Parental divorce**
+gen div=.
+replace div=1 if divscage<=16
+replace div=0 if divscage>16
+tab div,m
+
+gen div53 = div
+gen div63 = div
+gen div68 = div
+
+**Quality of Parental Care
+
+**Mother's parental bonding
+
+*Check whether ok that missing obs code is correct*/
+
+gen mumpbi=.
+replace mumpbi=1 if (mcare>=27  & moverp<13.5) & (mcare!=.  & moverp!=.)
+replace mumpbi=2 if (mcare >=27 & moverp>=13.5) & (mcare!=.  & moverp!=.)
+replace mumpbi=3 if (mcare <27 & moverp<13.5) & (mcare!=.  & moverp!=.)
+replace mumpbi=4 if (mcare<27 & moverp>=13.5) & (mcare!=.  & moverp!=.)
+
+tab mumpbi,m
+label define mumpbi 1"Optimal parenting" 2 "Affectionate constraint" 3"Neglectful parenting" 4"Affectionless control"
+label values mumpbi mumpbi
+tab mumpbi,m
+
+**Afectionless control more likely to be associated with poor mental health outcomes hence recode**
+recode mumpbi 3=0 1=0 2=0 4=1, gen (mpbi)
+label define mpbi 1"Not normal" 0 "Normal"
+label values mpbi mpbi
+tab mpbi,m
+
+gen mpbi53 = mpbi
+gen mpbi63 = mpbi
+gen mpbi68 = mpbi
+
+**Father's parental bonding *
+
+*Check whether ok that missing obs code is correct*/
+
+gen dadpbi=.
+replace dadpbi=1 if (fcare>=24  & foverp<12.5) & (fcare!=.  & foverp!=.)
+replace dadpbi=2 if (fcare >=24 & foverp>=12.5) & (fcare!=.  & foverp!=.)
+replace dadpbi=3 if (fcare <24 & foverp<12.5) & (fcare!=.  & foverp!=.)
+replace dadpbi=4 if (fcare<24 & foverp>=12.5) & (fcare!=.  & foverp!=.)
+
+tab dadpbi,m
+label define dadpbi 1"Optimal parenting" 2 "Affectionate constraint" 3"Absent parenting" 4"Affectionless control"
+label values dadpbi dadpbi
+tab dadpbi,m
+
+**Afectionless control more likely to be associated with poor mental health outcomes hence recode**
+recode dadpbi 3=0 1=0 2=0 4=1, gen (dpbi)
+label define dpbi 1"Not normal" 0 "normal"
+label values dpbi dpbi
+tab dpbi,m
+
+gen dpbi53 = dpbi
+gen dpbi63 = dpbi
+gen dpbi68 = dpbi
+
+**Father death <16**
+tab sagedf,m
+recode sagedf 99=. 
+gen lsdad=.
+replace lsdad=1 if  sagedf>=0 & sagedf<=16 
+replace lsdad=0 if sagedf>16 & sagedf!=.
+replace lsdad=0 if sagedf==-9999
+tab lsdad,m
+
+
+
+**Mother death <16**
+tab sagedm,m
+recode sagedm 99=. 
+gen lsmum=.
+replace lsmum=1 if  sagedm>=0 & sagedm<=16 
+replace lsmum=0 if sagedm>16 & sagedm!=.
+replace lsmum=0 if sagedm==-9999
+tab lsmum,m
+
+
+*ANY PARENT DEATH <16 YEARS*
+gen pdth2=.
+replace pdth2=1 if lsdad==1 | lsmum==1
+replace pdth2=0 if lsdad==0 & lsmum==0
+replace pdth2=. if lsdad==. | lsmum==.
+
+tab pdth2,m
+
+gen pdth53 = pdth2
+gen pdth63 = pdth2
+gen pdth68 = pdth2
+
+*MATERNAL SEPARATION UP TO 6 YEARS
+*Give missing code for particpants with unknown responses*/
+
+recode SET4652 -9999=.
+recode SET4652 -9899=.
+gen sep=.
+replace sep=1 if SET4652==-9799
+replace sep=1 if SET4652==9
+replace sep=0 if SET4652>=0 & SET4652<9
+tab sep,m
+
+gen sep53 = sep
+gen sep63 = sep
+gen sep68 = sep
+
+***** TOTAL RISK SCORES  *****
+egen scr=rowtotal(sclas amen2 reprs2 hcln2 ccln2 clsh crowd own)
+egen nmiss12=rowmiss(sclas amen2 reprs2 hcln2 ccln2 clsh crowd own)
+replace scr=. if nmiss12
+replace scr=3 if scr>=4 & scr<=8
+proportion scr
+
+
+*Cumulative psychosocial risk
+egen psychscr=rowtotal( tint2 psych div dpbi mpbi pdth2 sep maltrt)
+egen nmiss2=rowmiss( tint2 psych div dpbi mpbi pdth2 sep maltrt)
+replace psychscr=. if nmiss2
+replace psychscr=3 if psychscr>=4 & psychscr<=6
+*recode psychscr (3=2)
+proportion psychscr
+
+ 
+
+***Cumualtive Total Risk ***
+egen totalr=rowtotal(sclas amen2 reprs2 hcln2 ccln2 clsh crowd own tint2 psych div dpbi mpbi pdth2 sep maltrt)
+egen nmiss5=rowmiss(sclas amen2 reprs2 hcln2 ccln2 clsh crowd own tint2 psych div dpbi mpbi pdth2 sep maltrt)
+replace totalr=. if nmiss5
+replace totalr=4 if totalr>=5 & totalr!=.
+proportion totalr
+
+
+*** BINARY RISK SCORES *****
+
+gen psychBIN = .
+replace psychBIN = 0 if(psychscr==0)
+replace psychBIN = 0 if(psychscr==1)
+replace psychBIN = 1 if(psychscr==2)
+replace psychBIN = 1 if(psychscr==3)
+
+gen scrBIN = .
+replace scrBIN = 0 if(scr==0)
+replace scrBIN = 0 if(scr==1)
+replace scrBIN = 1 if(scr==2)
+replace scrBIN = 1 if(scr==3)
+
+gen totBIN = .
+replace totBIN = 0 if(totalr==0)
+replace totBIN = 0 if(totalr==1)
+replace totBIN = 0 if(totalr==2)
+replace totBIN = 1 if(totalr==3)
+replace totBIN = 1 if(totalr==4)
+
+
+
+
+
+
+
+
+
+
+
+
+*****************************************************************************************************
+*****************************************************************************************************
+*****************************************************************************************************
+* GHQ*
+*****************************************************************************************************
+*****************************************************************************************************
+*****************************************************************************************************
+
+* cleaning GHQ 2015 *
+
+foreach var of varlist GHQ0115x GHQ0215x GHQ0315x GHQ0415x GHQ0515x GHQ0615x GHQ0715x GHQ0815x GHQ0915x GHQ1015x GHQ1115x GHQ1215x GHQ1315x GHQ1415x GHQ1515x GHQ1615x GHQ1715x GHQ1815x GHQ1915x GHQ2015x GHQ2115x GHQ2215x GHQ2315x GHQ2415x GHQ2515x GHQ2615x GHQ2715x {
+recode `var' (-9/-7=.)
+}
+
+* cleaning GHQ 2009 *
+foreach var of varlist GHQ0109 GHQ0209 GHQ0309 GHQ0409 GHQ0509 GHQ0609 GHQ0709 GHQ0809 GHQ0909 GHQ1009 GHQ1109 GHQ1209 GHQ1309 GHQ1409 GHQ1509 GHQ1609 GHQ1709 GHQ1809 GHQ1909 GHQ2009 GHQ2109 GHQ2209 GHQ2309 GHQ2409 GHQ2509 GHQ2609 GHQ2709 GHQ2809 {
+recode `var' (7/9=.)
+}
+*** rishi's version of GHQ in 2009 * 
+gen mentl09 = (GHQ0109+1) + (GHQ0209+1) + (GHQ0309+1)+ (GHQ0409+1)+ (GHQ0509+1)+ (GHQ0609+1)+ (GHQ0709+1)+ (GHQ0809+1)+ (GHQ0909+1)+ (GHQ1009+1)+ (GHQ1109+1)+ (GHQ1209+1)+ (GHQ1309+1)+ (GHQ1409+1)+ (GHQ1509+1)+ (GHQ1609+1)+ (GHQ1709+1)+ (GHQ1809+1)+ (GHQ1909+1)+ (GHQ2009+1)+ (GHQ2109+1)+ (GHQ2209+1)+ (GHQ2309+1)+ (GHQ2409+1)+ (GHQ2509+1)+ (GHQ2609+1)+ (GHQ2709+1)+ (GHQ2809+1)
+label var mentl "General Health Questionnaire 28 (min score 28/max score 112)"
+
+
+* cleaning GHQ 1999 * 
+foreach var of varlist  ghq0199 ghq0299 ghq0399 ghq0499 ghq0599 ghq0699 ghq0799 ghq0899 ghq0999 ghq1099 ghq1199 ghq1299 ghq1399 ghq1499 ghq1599 ghq1699 ghq1799 ghq1899 ghq1999 ghq2099 ghq2199 ghq2299 ghq2399 ghq2499 ghq2599 ghq2699 ghq2799 ghq2899 {
+recode `var' (66/99=.)
+}
+
+
+* generate likert values * 
+
+* 2015* 
+gen ghq15_LIKERT = ( GHQ0115x +GHQ0215x +GHQ0315x +GHQ0415x +GHQ0515x +GHQ0615x +GHQ0715x +GHQ0815x +GHQ0915x +GHQ1015x +GHQ1115x +GHQ1215x +GHQ1315x +GHQ1415x +GHQ1515x+ GHQ1615x+ GHQ1715x +GHQ1815x +GHQ1915x+ GHQ2015x +GHQ2115x +GHQ2215x+ GHQ2315x +GHQ2415x +GHQ2515x+ GHQ2615x +GHQ2715x+GHQ2815x )
+* 2009*
+gen ghq09_LIKERT = (GHQ0109+1) + (GHQ0209+1) + (GHQ0309+1)+ (GHQ0409+1)+ (GHQ0509+1)+ (GHQ0609+1)+ (GHQ0709+1)+ (GHQ0809+1)+ (GHQ0909+1)+ (GHQ1009+1)+ (GHQ1109+1)+ (GHQ1209+1)+ (GHQ1309+1)+ (GHQ1409+1)+ (GHQ1509+1)+ (GHQ1609+1)+ (GHQ1709+1)+ (GHQ1809+1)+ (GHQ1909+1)+ (GHQ2009+1)+ (GHQ2109+1)+ (GHQ2209+1)+ (GHQ2309+1)+ (GHQ2409+1)+ (GHQ2509+1)+ (GHQ2609+1)+ (GHQ2709+1)+ (GHQ2809+1)
+* 1999*
+gen ghq0199_LIKERT = (  ghq0199 +ghq0299 +ghq0399 +ghq0499 +ghq0599 +ghq0699 +ghq0799 +ghq0899 +ghq0999 +ghq1099 +ghq1199 +ghq1299 +ghq1399 +ghq1499+ ghq1599+ ghq1699+ ghq1799 +ghq1899 +ghq1999 +ghq2099 +ghq2199+ ghq2299+ ghq2399 +ghq2499+ ghq2599 +ghq2699 +ghq2799 +ghq2899 )
+
+* BINARY VALUES - NO DISTRESS * * cutoffs as per Sterling         http://dx.doi.org/10.1016/S1836-9553(11)70060-1 ***
+
+foreach var of varlist GHQ0109 GHQ0209 GHQ0309 GHQ0409 GHQ0509 GHQ0609 GHQ0709 GHQ0809 GHQ0909 GHQ1009 GHQ1109 GHQ1209 GHQ1309 GHQ1409 GHQ1509 GHQ1609 GHQ1709 GHQ1809 GHQ1909 GHQ2009 GHQ2109 GHQ2209 GHQ2309 GHQ2409 GHQ2509 GHQ2609 GHQ2709 GHQ2809   {
+recode `var' (1=0)(2/3=1), gen(`var'BIN)
+}
+
+foreach var of varlist ghq0199 ghq0299 ghq0399 ghq0499 ghq0599 ghq0699 ghq0799 ghq0899 ghq0999 ghq1099 ghq1199 ghq1299 ghq1399 ghq1499 ghq1599 ghq1699 ghq1799 ghq1899 ghq1999 ghq2099 ghq2199 ghq2299 ghq2399 ghq2499 ghq2599 ghq2699 ghq2799 ghq2899 GHQ0115x GHQ0215x GHQ0315x GHQ0415x GHQ0515x GHQ0615x GHQ0715x GHQ0815x GHQ0915x GHQ1015x GHQ1115x GHQ1215x GHQ1315x GHQ1415x GHQ1515x GHQ1615x GHQ1715x GHQ1815x GHQ1915x GHQ2015x GHQ2115x GHQ2215x GHQ2315x GHQ2415x GHQ2515x GHQ2615x GHQ2715x GHQ2815x {
+recode `var' (1/2=0)(3/4=1), gen(`var'BIN)
+}
+
+
+
+
+* 2015* 
+gen ghq15_BIN = ( GHQ0115xBIN +GHQ0215xBIN +GHQ0315xBIN +GHQ0415xBIN +GHQ0515xBIN +GHQ0615xBIN +GHQ0715xBIN +GHQ0815xBIN +GHQ0915xBIN +GHQ1015xBIN +GHQ1115xBIN +GHQ1215xBIN +GHQ1315xBIN +GHQ1415xBIN +GHQ1515xBIN+ GHQ1615xBIN+ GHQ1715xBIN +GHQ1815xBIN +GHQ1915xBIN+ GHQ2015xBIN +GHQ2115xBIN +GHQ2215xBIN+ GHQ2315xBIN +GHQ2415xBIN +GHQ2515xBIN+ GHQ2615xBIN +GHQ2715xBIN +GHQ2815xBIN)
+recode ghq15_BIN (0/4=0)(5/50=1)
+
+* 2009*
+gen ghq09_BIN = (GHQ0109BIN + GHQ0209BIN + GHQ0309BIN+ GHQ0409BIN+ GHQ0509BIN+ GHQ0609BIN+ GHQ0709BIN+ GHQ0809BIN+ GHQ0909BIN+ GHQ1009BIN+ GHQ1109BIN+ GHQ1209BIN+ GHQ1309BIN+ GHQ1409BIN+ GHQ1509BIN+ GHQ1609BIN+ GHQ1709BIN+ GHQ1809BIN+ GHQ1909BIN+ GHQ2009BIN+ GHQ2109BIN+ GHQ2209BIN+ GHQ2309BIN+ GHQ2409BIN+ GHQ2509BIN+ GHQ2609BIN+ GHQ2709BIN+ GHQ2809BIN)
+recode ghq09_BIN (0/4=0)(5/50=1)
+
+* 1999*
+gen ghq0199_BIN = (  ghq0199BIN +ghq0299BIN +ghq0399BIN +ghq0499BIN +ghq0599BIN +ghq0699BIN +ghq0799BIN +ghq0899BIN +ghq0999BIN +ghq1099BIN +ghq1199BIN +ghq1299BIN +ghq1399BIN +ghq1499BIN+ ghq1599BIN+ ghq1699BIN+ ghq1799BIN +ghq1899BIN +ghq1999BIN +ghq2099BIN +ghq2199BIN+ ghq2299BIN+ ghq2399BIN +ghq2499BIN+ ghq2599BIN +ghq2699BIN +ghq2799BIN +ghq2899BIN )
+recode ghq0199_BIN (0/4=0)(5/50=1)
+
+
+***** GHQ NO DISTRESS ALL WAVES ****
+
+gen ghq9915BIN = .
+replace ghq9915BIN = 0 if(ghq15_BIN== 0 &  ghq09_BIN ==0 &  ghq0199_BIN==0)
+replace ghq9915BIN = 1 if(ghq15_BIN== 1 |  ghq09_BIN == 1 |  ghq0199_BIN==1)
+
+
+***** GHW AVERAGE SCORE ALL WAVES ****
+gen ghqAVE = ( ghq15_LIKERT+ ghq09_LIKERT+ ghq0199_LIKERT)/3
+
+* normalise via log transformation *
+
+gen ghqlog = ln(ghqAVE)
+
+* split the ghq scores into tertiles for analysis * 
+
+xtile ghq153 = ghq15_LIKERT, nq(3)
+xtile ghq093 = ghq09_LIKERT, nq(3)
+xtile ghq993 = ghq0199_LIKERT, nq(3)
+
+label variable ghqAVE "GHQ average score across 53 60-64 68-69"
+label variable ghqlog "Log average GHQ score age 53 60-64 68-69"
+*******************************************************************
+* resilience scores * 
+
+* generate resilience if GHQ in2015 is in top tertile and total childhood adversity is 3/4 *
+
+gen restot15 = .
+replace restot15 = 1 if (ghq153==1 & totalr==3)
+replace restot15 = 1 if (ghq153==1 & totalr==4)
+replace restot15 = 0 if (ghq153==2)
+replace restot15 = 0 if (ghq153==3)
+
+* generate resilience if GHQ in2009 is in top tertile and total childhood adversity is 3/4 *
+
+
+gen restot09 = .
+replace restot09 = 1 if (ghq093==1 & totalr==3)
+replace restot09 = 1 if (ghq093==1 & totalr==4)
+replace restot09 = 0 if (ghq093==2)
+replace restot09 = 0 if (ghq093==3)
+
+* generate resilience if GHQ in 1999 is in top tertile and total childhood adversity is 3/4 *
+
+gen restot99 = .
+replace restot99 = 1 if (ghq993==1 & totalr==3)
+replace restot99 = 1 if (ghq993==1 & totalr==4)
+replace restot99 = 0 if (ghq993==2)
+replace restot99 = 0 if (ghq993==3)
+
+****
+
+
+************************
+*** SOCIAL SUPPORT****** 1999 1999
+************************
+************************
+*** SOCIAL SUPPORT****** 1999 1999
+************************************************
+*** SOCIAL SUPPORT****** 1999 1999
+************************************************
+*** SOCIAL SUPPORT****** 1999 1999
+************************
+
+*STRUCURAL SUPPORTS * 
+*STRUCURAL SUPPORTS * 
+*STRUCURAL SUPPORTS * 
+
+
+** how often visit/are visited by friends * 
+
+clonevar visitfr = frndc
+
+recode visitfr (5=100)(4=80)(3=60)(2=40)(1=20), gen (visitIX)
+replace visitIX = 0 if(frndc1==2)
+
+* Are there any relatives or friends with whom you have regular contact, either by visit, telephone or letters? *
+* binary*
+*recode frndc1 (2=0)(9=.), gen(contactfr)
+*recode contactfr (1=100), gen(contactIX)
+
+
+
+*How many friends or relatives do you see once a month or more?*
+
+recode frndr (9=.), gen(numberfr)
+
+recode numberfr (5=100)(4=75)(3=50)(2=25)(1=0), gen (numberIX)
+
+*1	None [How many friends/relatives do you see once a month or more?]
+*2	1-2
+*3	3-5
+*4	6-10
+*5	More than 10
+
+* marital status * 
+
+recode marstat (3/5=0)(1=0)(2=1), gen(marstat1
+recode marstat1 (1=100), gen(marIX)
+
+*FUNCTIONAL SUPPORTS *
+*FUNCTIONAL SUPPORTS *
+*FUNCTIONAL SUPPORTS *
+
+* POSITIVE ITEMS *
+* POSITIVE ITEMS *
+* POSITIVE ITEMS *
+
+
+** 	Do you think that you have friends, neighbours or relatives who would HELP you out if a problem or crisis came up? * 
+
+recode frndh (9=.), gen(helpfr)
+
+recode helpfr (4=100)(3=66.66666)(2=33.333333)(1=0), gen(helpIX)
+
+
+** 	Overall do you wish that you had more of a SOICIAL LIFE, or are thing about right for you, or would you prefer to see less of people? *
+
+recode frndm (9=.), gen(soclife)
+
+recode soclife (2=100)(1=0)(3=0), gen(socIX)
+
+
+* How much in the last 12 months did you CONFIDE in the person you felt closest to?*
+
+recode frcd99 (6/9=.), gen(confide)
+
+recode confide (3=100)(2=66.66666)(1=33.333333), gen(confideIX)
+
+gen frcd53=confideIX
+
+
+* How much, in the last 12 months, did you share interests, hobbies and fun with the person you felt closest to? *
+
+recode frsh99 (6/9=.)(-1=.)(1=33.333333)(2=66.6666666)(3=100), gen(hobbyIX)
+
+gen frsh53=hobbyIX
+
+* How much in the last 12 months did this person make you feel good about yourself? *
+
+recode frfg99 (6/9=.)(3=100)(2=66.66666)(1=33.33333), gen(feelIX)
+
+gen frfg53=feelIX
+
+* NEGATIVE ITEMS *
+* NEGATIVE ITEMS *
+* NEGATIVE ITEMS *
+
+
+* dissapointments by spouse in past year * 1=no*
+
+recode dssp (2=1)(1=0)(3/9=.), gen(dsspIX)
+recode dsspIX (1=100)
+replace dsspIX = 100 if(marstat==0)
+
+* lost contact wiuthg a close friend/relative * 1= no *
+
+recode rlos (1=0)(2=1)(3/9=.)
+
+recode rlos (1=100), gen(rlosIX)
+
+* how much worry/stress did person closest give yo uin past year* 1 = none 0= some *
+
+*recode frpr99 (0=1)(1/3=0)(6/9=.)
+
+recode frpr99 (6/9=.)(0=100)(1=66.66666)(2=33.333333)(3=0), gen(frprIX)
+
+gen frpr53=frprIX
+
+* how much did talking to the perosn you feel closes to to make you feel worse * * 1 = none 0= some *
+
+*recode frwr99 (0=1)(1/3=0)(6/9=.)(-1=.)
+
+recode frwr99 (-1=.)(6/9=.)(0=100)(1=66.66666)(2=33.333333)(3=0), gen(frwrIX)
+
+gen frwr53=frwrIX
+
+* 	How much in the last 12 months would you have liked to have confided more in the person you felt closest to? *
+
+recode frcm99 (6/9=.), gen(confidemore)
+recode confidemore (3=0)(2=33.333333)(1=66.6666666)(0=100), gen(confmoreIX)
+* if there is noone they've confided in they are given a score of 0 *
+replace confmoreIX = 0 if(frcd99==0)
+
+gen frcm53=confmoreIX
+
+************************************************************
+* Cumulative score - index - of social support * 1999 1999 1999 1999
+************************************************************
+* Cumulative score - index - of social support * 1999 1999 1999 1999
+************************************************************
+
+
+*total*
+
+* inclusive model*
+local SOCSUP99 "visitIX  numberIX helpIX socIX confideIX confmoreIX  marIX dsspIX rlosIX frprIX frwrIX  hobbyIX  feelIX"
+egen socsupIXinc = rmean(`SOCSUP99')
+* listwise delete*
+gen socsupIX = (visitIX+  numberIX+ helpIX+ socIX+ confideIX+ confmoreIX + marIX+ dsspIX+ rlosIX+ frprIX+ frwrIX + hobbyIX + feelIX)/13
+
+* structural only *
+
+* inclusive model*
+local STRSOCSUP99 "visitIX  numberIX marIX"
+egen strsocsupIXinc = rmean(`STRSOCSUP99')
+* listwise delete*
+gen strsocsupIX = (visitIX  + numberIX +marIX)/3
+
+* functional only*
+
+* inclusive model*
+local FUNSOCSUP99 "helpIX socIX confideIX confmoreIX  dsspIX rlosIX frprIX frwrIX  hobbyIX  feelIX"
+egen funsocsupIXinc = rmean(`FUNSOCSUP99')
+* listwise delete*
+gen funsocsupIX = (helpIX+ socIX+ confideIX+ confmoreIX + dsspIX+ rlosIX+ frprIX+ frwrIX + hobbyIX + feelIX)/10
+
+
+* positive functional  items *
+
+* inclusive model*
+local POSFUN99 "helpIX socIX confideIX  hobbyIX  feelIX"
+egen posfunIXinc = rmean(`POSFUN99')
+* listwise delete*
+gen posfunIX = (hobbyIX + helpIX+ socIX+ confideIX + feelIX)/5
+
+* negative structural items *
+
+* inclusive model*
+local NEGFUN99 "confmoreIX  dsspIX rlosIX frprIX frwrIX"
+egen negfunIXinc = rmean(`NEGFUN99')
+* listwise delete*
+gen negfunIX = ( dsspIX+ rlosIX+ frprIX+ frwrIX + confmoreIX)/5
+
+************************
+*** SOCIAL SUPPORT****** 2009 2009 2009 2009
+************************
+************************
+*** SOCIAL SUPPORT****** 2009 2009 2009 2009
+************************************************
+*** SOCIAL SUPPORT****** 2009 2009 2009 2009
+************************************************
+*** SOCIAL SUPPORT****** 2009 2009 2009 2009
+************************
+
+
+*STRUCURAL SUPPORTS * 
+*STRUCURAL SUPPORTS * 
+*STRUCURAL SUPPORTS * 
+
+** how often visit/are visited by friends * 
+
+clonevar visitfr09 = FRNDC09
+
+recode visitfr09 (7/9=.)(5=100)(4=80)(3=60)(2=40)(1=20), gen (visitIX09)
+replace visitIX09 = 0 if(FRNDC109==2)
+
+* Are there any relatives or friends with whom you have regular contact, either by visit, telephone or letters? *
+* binary*
+*recode FRNDC09 (7/9=.)(1=0)(2=25)(3=50)(4=75)(5=100), gen(contactIX09)
+
+
+* marital status *
+
+recode MARJ09X (2/3=0)(7/9=.), gen(marstat09)
+recode marstat09 (1=100), gen (marIX09)
+
+*How many friends or relatives do you see once a month or more?*
+
+recode FRNDR09 (9=.), gen(numberfr09)
+
+recode numberfr09 (6/9=.)(5=100)(4=75)(3=50)(2=25)(1=0), gen (numberIX09)
+
+*1	None [How many friends/relatives do you see once a month or more?]
+*2	1-2
+*3	3-5
+*4	6-10
+*5	More than 10
+
+** FUNCTIONAL SUPPORTS ***
+** FUNCTIONAL SUPPORTS ***
+** FUNCTIONAL SUPPORTS ***
+
+* POSITIVE ITEMS *
+* POSITIVE ITEMS *
+* POSITIVE ITEMS *
+
+
+
+** 	Do you think that you have friends, neighbours or relatives who would HELP you out if a problem or crisis came up? * 
+
+recode FRNDH09 (9=.), gen(helpfr09)
+
+recode helpfr09 (4=100)(3=66.66666)(2=33.333333)(1=0), gen(helpIX09)
+
+
+** 	Overall do you wish that you had more of a SOICIAL LIFE, or are thing about right for you, or would you prefer to see less of people? *
+
+recode FRNDM09 (9=.), gen(soclife09)
+
+recode soclife09 (2=100)(1=0)(3=0), gen(socIX09)
+
+
+* How much in the last 12 months did you CONFIDE in the person you felt closest to?*
+
+recode FRCD09 (6/9=.), gen(confide09)
+
+recode confide09 (3=100)(2=66.66666)(1=33.333333), gen(confideIX09)
+
+gen frcd63=confideIX09
+
+* How much in the last 12 months did this person make you feel good about yourself? *
+
+recode FRFG09 (6/9=.)(3=100)(2=66.66666)(1=33.33333), gen(feelIX09)
+
+gen frfg63=feelIX09
+
+
+* How much, in the last 12 months, did you share interests, hobbies and fun with the person you felt closest to? *
+
+recode FRSH09 (7/9=.)(-1=.)(1=33.333333)(2=66.6666666)(3=100), gen(hobbyIX09)
+
+gen frsh63=hobbyIX09
+
+* NEGATIVE ITEMS *
+* NEGATIVE ITEMS *
+* NEGATIVE ITEMS *
+
+* dissapointments by spouse in past year * 1=no*
+
+recode DSSP09 (2=1)(1=0)(3/9=.)
+recode DSSP09 (0=100), gen(dsspIX09)
+replace dsspIX09 = 100 if(marstat09==0)
+
+* lost contact wiuthg a close friend/relative * 1= no *
+
+recode RLOS09 (1=0)(2=1)(3/9=.)
+
+recode RLOS09 (0=100), gen(rlosIX09)
+
+* how much worry/stress did person closest give yo uin past year* 1 = none 0= some *
+
+*recode FRPR09 (0=1)(1/3=0)(6/9=.)
+
+recode FRPR09(6/9=.)(0=100)(1=66.66666)(2=33.333333)(3=0), gen(frprIX09)
+
+gen frpr63=frprIX09
+
+* how much did talking to the perosn you feel closes to to make you feel worse * * 1 = none 0= some *
+
+*recode FRWR09 (0=1)(1/3=0)(6/9=.)(-1=.)
+
+recode FRWR09 (-1=.)(6/9=.)(0=100)(1=66.66666)(2=33.333333)(3=0), gen(frwrIX09)
+
+gen frwr63=frwrIX09
+
+* 	How much in the last 12 months would you have liked to have confided more in the person you felt closest to? *
+
+recode FRCM09 (6/9=.), gen(confidemore09)
+
+recode confidemore09 (3=0)(2=33.333333)(1=66.6666666)(0=100), gen(confmoreIX09)
+* if there is noone they've confided in they are given a score of 0 *
+replace confmoreIX09 = 0 if(FRCD09==0)
+
+gen frcm63=confmoreIX09
+
+  ************************
+*** SOCIAL SUPPORT****** 2015 2015 2015
+************************
+************************
+*** SOCIAL SUPPORT******2015 2015 2015
+************************************************
+*** SOCIAL SUPPORT******2015 2015 2015
+************************************************
+*** SOCIAL SUPPORT****** 2015 2015 2015
+************************
+
+* How much in the last 12 months did you CONFIDE in the person you felt closest to?*
+
+
+
+recode FRCD14x (6/9=.), gen(confide14)
+
+recode confide14 (3=100)(2=66.66666)(1=33.333333), gen(confideIX14)
+
+gen frcd68=confideIX14
+
+* How much in the last 12 months did this person make you feel good about yourself? *
+
+recode FRFG14x (-1000/-1=.)(6/9=.)(3=100)(2=66.66666)(1=33.33333), gen(feelIX14x)
+
+gen frfg68=feelIX14x
+
+
+* How much, in the last 12 months, did you share interests, hobbies and fun with the person you felt closest to? *
+
+recode FRSH14x (7/9=.)(-1000/-1=.)(1=33.333333)(2=66.6666666)(3=100), gen(hobbyIX14x)
+
+gen frsh68=hobbyIX14x
+
+
+* how much did talking to the perosn you feel closes to to make you feel worse * * 1 = none 0= some *
+
+*recode FRWR14x (0=1)(1/3=0)(6/9=.)(-1=.)
+
+recode FRWR14x (-1000/-1=.)(6/9=.)(0=100)(1=66.66666)(2=33.333333)(3=0), gen(frwrIX14)
+
+gen frwr68=frwrIX14
+
+
+* how much worry/stress did person closest give yo uin past year* 1 = none 0= some *
+
+*recode FRPR14x (0=1)(1/3=0)(6/9=.)
+
+recode FRPR14x(6/9=.)(-1000/-1=.)(0=100)(1=66.66666)(2=33.333333)(3=0), gen(frprIX14)
+
+gen frpr68=frprIX14
+
+* 	How much in the last 12 months would you have liked to have confided more in the person you felt closest to? *
+
+recode FRCM14x (-1000/-1=.)(6/9=.), gen(confidemore14)
+
+recode confidemore14 (3=0)(2=33.333333)(1=66.6666666)(0=100), gen(confmoreIX14)
+* if there is noone they've confided in they are given a score of 0 *
+replace confmoreIX14 = 0 if(FRCD14x==0)
+
+gen frcm68=confmoreIX14
+
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************
+* CUMULATIVE SOCIAL SUPPORT SCORES FOR 99 AND 09 *
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+************************************************************************************************************************
+
+*total*
+
+* inclusive model*
+local SOCSUPTOT "visitIX  numberIX helpIX socIX confideIX confmoreIX  marIX marIX09 dsspIX rlosIX frprIX frwrIX  hobbyIX  feelIX visitIX09  numberIX09 helpIX09 socIX09 confideIX09 confmoreIX09 dsspIX09 rlosIX09 frprIX09 frwrIX09  hobbyIX09  feelIX09"
+egen socsupTOTinc = rmean(`SOCSUPTOT')
+* listwise delete*
+
+gen socsupTOT = ( visitIX+  numberIX+ helpIX+ socIX+ confideIX+ confmoreIX + marIX+ marIX09+ dsspIX+ rlosIX+ frprIX+ frwrIX + visitIX09+  numberIX09+ helpIX09+ socIX09+ confideIX09+ confmoreIX09 +  dsspIX09+ rlosIX09+ frprIX09+ frwrIX09 + hobbyIX + hobbyIX09 + feelIX+ feelIX09)/26
+gen socsupSUM =  (visitIX+  numberIX+ helpIX+ socIX+ confideIX+ confmoreIX + marIX+ marIX09+ dsspIX+ rlosIX+ frprIX+ frwrIX + visitIX09+  numberIX09+ helpIX09+ socIX09+ confideIX09+ confmoreIX09 +  dsspIX09+ rlosIX09+ frprIX09+ frwrIX09 + hobbyIX + hobbyIX09 + feelIX+ feelIX09)/10
+
+* strcutural only *
+
+* inclusive model*
+local STRSOCSUPTOT "visitIX  numberIX marIX marIX09 visitIX09  numberIX09 "
+egen strsocsupTOTinc = rmean(`STRSOCSUPTOT')
+* listwise delete*
+gen strsocsupTOT = (visitIX  + numberIX +marIX +marIX09+ visitIX09  + numberIX09 )/6
+gen strsocsupSUM = (visitIX  + numberIX +marIX +marIX09+ visitIX09  + numberIX09)/10
+
+* functional only*
+
+* inclusive model*
+local FUNSOCSUPTOT " helpIX socIX confideIX confmoreIX dsspIX rlosIX frprIX frwrIX  hobbyIX  feelIX helpIX09 socIX09 confideIX09 confmoreIX09 dsspIX09 rlosIX09 frprIX09 frwrIX09  hobbyIX09  feelIX09"
+egen funsocsupTOTinc = rmean(`STRSOCSUPTOT')
+* listwise delete*
+gen funsocsupTOT = (helpIX+ socIX+ confideIX+ confmoreIX + dsspIX+ rlosIX+ frprIX+ frwrIX+ helpIX09+ socIX09+ confideIX09+ confmoreIX09 + dsspIX09+ rlosIX09+ frprIX09+ frwrIX09+ hobbyIX + hobbyIX09 + feelIX+ feelIX09)/20
+gen funsocsupSUM = (helpIX+ socIX+ confideIX+ confmoreIX + dsspIX+ rlosIX+ frprIX+ frwrIX+ helpIX09+ socIX09+ confideIX09+ confmoreIX09 + dsspIX09+ rlosIX09+ frprIX09+ frwrIX09+ hobbyIX + hobbyIX09 + feelIX+ feelIX09)/10
+
+* positive functional items *
+
+* inclusive model*
+local POSFUNTOT " helpIX socIX confideIX hobbyIX  feelIX helpIX09 socIX09 confideIX09 hobbyIX09  feelIX09"
+egen posfunTOTinc = rmean(`POSFUNTOT')
+* listwise delete*
+
+gen posfunTOT = ( helpIX+ socIX+ confideIX +helpIX09+ socIX09+ confideIX09 + hobbyIX + hobbyIX09 + feelIX+ feelIX09)/10
+gen posfunSUM =  (helpIX+ socIX+ confideIX +helpIX09+ socIX09+ confideIX09 + hobbyIX + hobbyIX09 + feelIX+ feelIX09)/10
+
+* negative functional items *
+
+* inclusive model*
+local NEGFUNTOT "  confmoreIX dsspIX rlosIX frprIX frwrIX   confmoreIX09 dsspIX09 rlosIX09 frprIX09 frwrIX09  "
+egen negfunTOTinc = rmean(`NEGFUNTOT')
+* listwise delete*
+gen negfunTOT = ( dsspIX+ rlosIX+ frprIX+ frwrIX + dsspIX09+ rlosIX09+ frprIX09+ frwrIX09+ confmoreIX+ confmoreIX09)/10
+gen negfunSUM =  (dsspIX+ rlosIX+ frprIX+ frwrIX + dsspIX09+ rlosIX09+ frprIX09+ frwrIX09+ confmoreIX+ confmoreIX09)/10
+
+
+***** SPLITTING ALL THE SOC SUP VARIABLES INTO QUARTILES * they're non-normal, so they can be analysis here 
+foreach var of varlist socsupIX funsocsupIX strsocsupIX posfunIX negfunIX socsupIX09 funsocsupIX09 strsocsupIX09 posfunIX09 negfunIX09 socsupTOT funsocsupTOT strsocsupTOT posfunTOT negfunTOT {
+xtile `var'_Q = `var', nq(4)
+}
+
+xtile ssSUM4 = socsupSUM, nq(4)
+
+zscore socsupSUM funsocsupSUM strsocsupSUM
+
+************************
+*** HEALTH BEHAVIORS ******
+************************
+
+
+
+recode EXER99X (7/88=.), gen(exer99)
+
+* have to have answered yes to exercvise for the followup questions so will exclude **
+
+* exercise - number of times made sweaty * 
+*recode exers (999=.)
+
+* exercise - number of times in last four weeks did sports vigouros activity * 
+*recode exern (999=.)
+
+
+*** exercise at 2009 ***
+clonevar exer09 = exer09x
+recode exer09 (777/999=.)
+
+*** exercise at 2014 ***
+clonevar exer14 = EXER14x
+recode exer14 (-999/-1=.)(3=.)
+
+
+
+
+** exercise in 199 and 2009 **
+
+gen exerTOT = .
+replace exerTOT = 0 if (exer09 ==0 & exer==0)
+replace exerTOT = 1 if (exer09 ==0 & exer ==1)
+replace exerTOT = 2 if (exer09 >=1 & exer==0)
+replace exerTOT = 3 if (exer09 >=1 & exer==1)
+
+label define exerTOT 0 "Never exercise" 1 "Exercise in 99 not 09" 2 "Exercise in 09 not 99" 3 "Exercise in 09 and 99"
+label values exerTOT exerTOT
+
+* EXERCISE AT 53, 60-64 * 
+gen exerSUM = (exer99 + exer09)
+* gen exerSUM = (exer99 + exer09 + exer14)
+xtile exerSUM4 = exerSUM, nq(4)
+
+*** COVARIATES ****
+
+* personality *
+recode AGREETOT14x (-999/-1=.), gen(agree14)
+recode EXTROTOT14x (-999/-1=.), gen(extro14)
+recode CONSCTOT14x (-999/-1=.), gen(consc14)
+
+* neighbourhood *
+
+recode NBHDA09 (66/99=.)(5=1)(4=2)(2=4)(1=5), gen(neighbelong)
+recode NBHDB09 (66/99=.)(5=1)(4=2)(2=4)(1=5), gen(neighfriend)
+recode NBHDC09 (66/99=.)(5=1)(4=2)(2=4)(1=5), gen(neighadvice)
+recode NBHDE09 (66/99=.)(5=1)(4=2)(2=4)(1=5), gen(neighimpro)
+recode NBHDF09 (66/99=.)(5=1)(4=2)(2=4)(1=5), gen(neighremain)
+recode NBHDG09 (66/99=.)(5=1)(4=2)(2=4)(1=5), gen(neighsimilar)
+recode NBHDH09 (66/99=.)(5=1)(4=2)(2=4)(1=5), gen(neightalk)
+
+gen NEIGHBOUR = (neighbelong + neighfriend +neighadvice + neighimpro+ neighremain + neighsimilar + neightalk)
+zscore NEIGHBOUR
+clonevar neighbour = z_NEIGHBOUR 
+
+* education *
+
+
+* cleaning unknown and died *
+recode lhqr (0=1)(1/2=2) (3/5=3) (6/8=4)(9/10=.), gen(edu)
+label define edlab 1 "None" 2 "Vocational course, proficiency only OR Sub GCE or sub Burnham C" 3 "GCE 'O' level or Burnham C OR GCE 'A' Level or Burnham B OR Burnham A2" 4 "1st degree or higher"
+label values edu edlab 
+recode edu (1/2=1) (3/4=0), gen(lowedu)
+recode edu (1/2=0)(3/4=1), gen(hedu)
+
+recode lhqr (0/2=1) (3=2) (4/5=3) (6/8=4) (9/10=.), gen(educ26g)
+label var educ26g "Educational level attained (5 cat)"
+label define edulab 1 "None/Sub-GCE" 2 "O-level" 3 "A level or equiv" 4 "Degree or higher"
+label values educ26g edulab
+
+ 
+* own sep *
+gen SEP=.
+replace SEP=SC53 if(SC53<7)
+replace SEP=sc43 if(SC53>6 & sc43<7)
+replace SEP=sc36 if(sc43>6 & SC53>6 & sc36<7)
+replace SEP=. if SEP==0
+recode SEP (6=1)(5=2)(4=3)(3=4)(2=5)(1=6)
+label variable SEP "Summary Participant's Adult Social Class"
+label define SEP 6 "I Professional" 5 "II Intermediate " 4 "IIINM Skilled (Non-manual)" 3 "IIM Skilled (Manual)" 2 "IV Partly skilled" 1 "V Unskilled"
+label values SEP SEP
+
+***************************************************************************
+* RESOURCES *
+
+
+*** SOCIAL RESOURCES ***
+
+ 
+
+* Parental interest in education * 
+
+recode TINT53 (-99999/-1=.), gen(parint53)
+recode TINT57 (-99999/-1=.)(0=.), gen(parint57)
+recode TINT59 (-99999/-1=.), gen(parint59)
+
+gen PARINT = ( parint53 + parint57+ parint59)
+
+*** INDIVIDUAL RESOURCES ***
+
+
+
+* SELF _ORGANISATION * 
+
+clonevar selforg13=SC13EFA
+clonevar selforg15=SC15EFA
+
+gen selforg1315 = selforg13 + selforg15
+
+* CHILDHOOD COGNITION *
+
+*sum score of 8, 11, and 15 ages *
+
+gen COG = cog11h+ cog15h+ cog8h
+
+
+
+*** ENVIRONMENTAL RESOURCES ***
+
+
+**INFLAMMATORY MARKERS **
+recode BIOMIL609 (77/999999=.), gen(il6)
+recode CREAPROT09 (77/999999=.), gen(crp)
+
+
+
+
+
+*******************************************************************************
+* RESILIENCE *
+*******************************************************************************
+
+* resilience to psychosocial risk factors * 
+
+gen psychres = .
+replace psychres = 1 if(ghq9915BIN==0 & psychscr==2)
+replace psychres = 1 if(ghq9915BIN==0 & psychscr==3)
+replace psychres = 0 if(ghq9915BIN==1 & psychscr==3)
+replace psychres = 0 if(ghq9915BIN==1 & psychscr==2)
+replace psychres = 0 if(ghq9915BIN==1 & psychscr==1)
+replace psychres = 0 if(ghq9915BIN==1 & psychscr==0)
+replace psychres = 0 if(ghq9915BIN==0 & psychscr==1)
+replace psychres = 0 if(ghq9915BIN==0 & psychscr==0)
+
+* socioeconomic reslience *
+
+gen socres = .
+replace socres = 1 if(ghq9915BIN==0 & scr==2)
+replace socres = 1 if(ghq9915BIN==0 & scr==3)
+replace socres = 0 if(ghq9915BIN==1 & scr==3)
+replace socres = 0 if(ghq9915BIN==1 & scr==2)
+replace socres = 0 if(ghq9915BIN==1 & scr==1)
+replace socres = 0 if(ghq9915BIN==0 & scr==1)
+replace socres = 0 if(ghq9915BIN==0 & scr==0)
+replace socres = 0 if(ghq9915BIN==1 & scr==0)
+
+* total resilience * 
+
+gen totres = .
+replace totres = 0 if(ghq9915BIN==0 & totalr==0)
+replace totres = 0 if(ghq9915BIN==0 & totalr==1)
+replace totres = 0 if(ghq9915BIN==0 & totalr==2)
+replace totres = 1 if(ghq9915BIN==0 & totalr==3)
+replace totres = 1 if(ghq9915BIN==0 & totalr==4)
+replace totres = 0 if(ghq9915BIN==1 & totalr==0)
+replace totres = 0 if(ghq9915BIN==1 & totalr==1)
+replace totres = 0 if(ghq9915BIN==1 & totalr==2)
+replace totres = 0 if(ghq9915BIN==1 & totalr==3)
+replace totres = 0 if(ghq9915BIN==1 & totalr==4)
+
+
+* MASTEN CATEGORIES *
+
+* psychosocial * 
+
+recode psychscr (2/3=1), gen(Mpsych)
+
+gen MASTpsych = .
+* no caseness and 2/3 adversities  - resilient*
+replace MASTpsych = 1 if(ghq9915BIN==0 & Mpsych==1)
+* no case - no adversity - competent *
+replace MASTpsych = 2 if(ghq9915BIN==0 & Mpsych==0)
+* case - no adversity - highly vulnerable *
+replace MASTpsych = 3 if(ghq9915BIN==1 & Mpsych==0)
+* case - adversity - maladaptive *
+replace MASTpsych = 4 if(ghq9915BIN==1 & Mpsych==1)
+
+label define MASTpsych 1 "Resilient" 2 "Competent" 3 "Highly Vulnerable" 4 "Maladaptive" 
+label values MASTpsych MASTpsych
+
+* Binary masten psychosocial * 
+
+gen MASTpsychBIN = .
+replace MASTpsychBIN = 1 if(ghq9915BIN==0 & Mpsych==1)
+replace MASTpsychBIN = 0 if(ghq9915BIN==0 & Mpsych==0)
+replace MASTpsychBIN = 0 if(ghq9915BIN==1 & Mpsych==0)
+replace MASTpsychBIN = 0 if(ghq9915BIN==1 & Mpsych==1)
+
+* specifically comparing the maladaptive groiup - case & no adversity - with resilient group - no case & adversity *
+recode MASTpsych (4=0)(2/3=.), gen(malvres)
+* recoded so no case is 1 and case is 0 *
+recode malvres (0=1)(1=0)
+
+
+
+
+
+
+
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+*ANALYSIS*
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+****************************************************************************************************************************
+
+* relationship between GHQ-28 and risk factors *
+
+foreach var of varlist totalr psychscr scr{
+regress ghqlog `var'
+regress ghqlog sex `var'
+regress ghqlog sex##`var'
+}
+
+* interaction method to identify "protective factors" amonngst resources *
+
+foreach var of varlist SEP educ26g exerSUM COG selforg1315 socsupSUM strsocsupSUM funsocsupSUM neighbour {
+regress ghqlog c.`var'##totalr
+regress ghqlog c.`var'##psychscr
+regress ghqlog c.`var'##scr
+regress ghqlog c.`var'##c.totalr
+regress ghqlog c.`var'##c.psychscr
+regress ghqlog c.`var'##c.scr
+}
+
+* identifying resources assocuated with greater resilience * 
+
+foreach var of varlist SEP educ26g exerSUM COG selforg1315 socsupSUM strsocsupSUM funsocsupSUM neighbour {
+logistic totres `var'
+logistic totres sex `var'
+logistic totres sex##c.`var'
+logistic psychres `var'
+logistic psychres sex `var'
+logistic psychres sex##c.`var'
+logistic socres `var'
+logistic socres sex `var'
+logistic socres sex##c.`var'
+}
+
+**** SENSITIVITY ANALYSIS EXAMINING GHQ AT 53 ****
+
+* relationship between GHQ-28 and risk factors *
+
+gen ghq99log = ln(ghq0199_LIKERT)
+
+foreach var of varlist totalr psychscr scr{
+regress ghq99log `var'
+regress ghq99log sex `var'
+regress ghq99log sex##`var'
+}
+
+* interaction method to identify "protective factors" amonngst resources *
+
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+regress ghq99log c.`var'##totalr
+regress ghq99log c.`var'##psychscr
+regress ghq99log c.`var'##scr
+regress ghq99log c.`var'##c.totalr
+regress ghq99log c.`var'##c.psychscr
+regress ghq99log c.`var'##c.scr
+}
+
+* GHQ caseness * 
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+logistic ghq9915BIN c.`var'##psychscr
+logistic ghq9915BIN c.`var'##c.psychscr
+}
+
+
+* MEDIATION ANALYSIS *
+
+* using SEM *
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+sem (sex psychscr -> ghqlog, ) (sex psychscr -> `var', ) (sex `var' -> ghqlog, ), method(mlmv) nocapslatent
+estat teffects
+estat gof, stats(all)
+}
+* using regression *
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+mi estimate: regress ghqlog sex 'var' psychscr
+}
+
+* using binary variables - ie GHQ caseness over time *
+
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+binary_mediation, dv(ghq9915BIN) mv(`var') iv(psychscr)
+}
+
+
+
+
+* MASTEN ANALYSIS*
+
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+logistic psychr sex `var'
+logistic socr sex `var'
+logistic totr sex `var'
+}
+
+* ANALYSIS WITH MULTIPLE IMPUTATION DATA * 
+
+* PSYCHOSOCIAL ANALYSIS 
+
+* relationship between GHQ-28 and risk factors *
+
+
+mi estimate: regress ghqlog psychscrMI
+mi estimate: regress ghqlog sex psychscrMI
+mi estimate: regress ghqlog sex##c.psychscrMI
+
+* resource interactions with GHQ *
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+mi estimate: regress ghqlog c.`var'##psychscrMI
+mi estimate: regress ghqlog c.`var'##c.psychscrMI
+}
+
+
+
+* sex interactions with GHQ *
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+regress ghqlog c.`var'##sex
+}
+
+
+foreach var of varlist socsupSUM strsocsupSUM funsocsupSUM  exerSUM SEP educ26g COG selforg1315  neighbour {
+logistic ghq9915BIN c.`var'##sex
+}
+
+* fully adjusted model *
+mi estimate: regress ghqlog SEP educ26g exerSUM COG selforg1315 socsupSUM neighbour
+
+logistic ghq99BIN SEP educ26g exerSUM COG selforg1315 socsupSUM neighbour 
+
+* examining realtionship between resources and psych adversity * 
+
+mi estimate: regress socsupSUM sex psychscrMI
+mi estimate: regress strsocsupSUM sex psychscrMI
+mi estimate: regress funsocsupSUM sex psychscrMI
+mi estimate: regress COG sex psychscrMI
+mi estimate: regress selforg1315 sex psychscrMI
+mi estimate: regress neighbour sex psychscrMI
+
+mi estimate: ologit SEP sex psychscrMI, or
+mi estimate, or: ologit SEP sex psychscrMI
+mi estimate, or: ologit exerSUM sex psychscrMI
+mi estimate, or: ologit educ26g sex psychscrMI
+
+
+* cronbach's alpha for neighoburhood cohesion scale *
+
+alpha neighbelong neighfriend neighadvice neighimpro neighremain neighsimilar neightalk
+
+* examining each of the psychosocial variables by themseelves * 
+
+foreach var of varlist tint2 psych div dpbi mpbi pdth2 sep maltrt {
+regress ghqlog sex `var'
+regress ghqlog sex SEP educ26g exerSUM COG selforg1315 socsupSUM strsocsupSUM funsocsupSUM neighbour `var'
+}
+
+foreach var of varlist tint2 psych div dpbi mpbi pdth2 sep maltrt {
+regress ghqlog c.SEP##c.`var'
+regress ghqlog c.educ26g##c.`var'
+regress ghqlog c.exerSUM##c.`var'
+regress ghqlog c.COG##c.`var'
+regress ghqlog c.selforg1315##c.`var'
+regress ghqlog c.socsupSUM##c.`var'
+regress ghqlog c.strsocsupSUM##c.`var'
+regress ghqlog c.funsocsupSUM##c.`var'
+regress ghqlog c.neighbour##c.`var'
+}
+
+***** MISSINGNESS ***
+
+gen ghqMISS = .
+replace ghqMISS = 1 if (ghqAVE==.)
+replace ghqMISS = 0 if (ghqAVE!=.)
+
+gen ghqMISS53 = .
+replace ghqMISS53 = 1 if (ghqLIKERT53==.)
+replace ghqMISS53 = 0 if (ghqLIKERT53!=.)
+
+gen ghqMISS63 = .
+replace ghqMISS63 = 1 if (ghqLIKERT63==.)
+replace ghqMISS63 = 0 if (ghqLIKERT63!=.)
+
+gen ghqMISS68 = .
+replace ghqMISS68 = 1 if (ghqLIKERT68==.)
+replace ghqMISS68 = 0 if (ghqLIKERT68!=.)
+
+* missingness amongst psych adversities ** 
+
+gen tint2MISS =.
+replace tint2MISS = 1 if(tint2==.)
+replace tint2MISS = 0 if(tint2!=.)
+
+gen psychMISS =.
+replace psychMISS = 1 if(psych==.)
+replace psychMISS = 0 if(psych!=.)
+
+gen divMISS =.
+replace divMISS = 1 if(div==.)
+replace divMISS = 0 if(div!=.)
+
+gen dpbiMISS =.
+replace dpbiMISS = 1 if(dpbi==.)
+replace dpbiMISS = 0 if(dpbi!=.)
+
+gen mpbiMISS =.
+replace mpbiMISS = 1 if(mpbi==.)
+replace mpbiMISS = 0 if(mpbi!=.)
+
+gen pdth2MISS =.
+replace pdth2MISS = 1 if(pdth2==.)
+replace pdth2MISS = 0 if(pdth2!=.)
+
+gen sepMISS =.
+replace sepMISS = 1 if(sep==.)
+replace sepMISS = 0 if(sep!=.)
+
+gen maltrtMISS =.
+replace maltrtMISS = 1 if(maltrt==.)
+replace maltrtMISS = 0 if(maltrt!=.)
+
+gen adversityMISS = (maltrtMISS+sepMISS+pdth2MISS+mpbiMISS+dpbiMISS+divMISS+psychMISS+tint2MISS)
+
+
+
+
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+*****************************************************************************************************************************
+
+* LONG_CHLDADVERSITY_GHQ.DO
+* creates long file with chilhdood psychosical adversity and GHQ with mediators
+* Mai Stafford 22nd June
+
+
+*use "H:\nmas\aix\NSHDdata\resilience\MS Dataset 20.06.2017.dta", clear
+*drop _merge
+*merge serno using "H:\nmas\aix\NSHDdata\socrelations\cpq53to68_stata.dta", sort unique
+
+mi extract 0, clear
+
+* n=1222 have valid GHQ data but missing chldhood psychosoc adversity data
+* this missingness is mostly for parental interest in education, parental bonding and maltreatment
+tab psychscr if ghq15_LIKERT!=. | ghq09_LIKERT!=. | ghq0199_LIKERT!=., missing
+tab1 tint2 psych div dpbi mpbi pdth2 sep maltrt if ghq15_LIKERT!=. | ghq09_LIKERT!=. | ghq0199_LIKERT!=., missing
+
+* NOTE THAT GHQ, SOCIAL SUPPORT AND EXERCISE ARE TIME-VARYING. SEP, EDUCATION AND CHILDHOOD VARS ARE CONSTANT FOR EACH STUDY MEMBER
+* NOTE THAT I HAVE USED JUST THE CLOSE PERSONS Q VARS HERE - THIS CAN PROBABLY BE EXTENDED TO INCLUDE STRUCTURAL VARS AT AGES 53, 63, 68
+gen ghqLIKERT68=ghq15_LIKERT
+gen ghqLIKERT63=ghq09_LIKERT 
+gen ghqLIKERT53=ghq0199_LIKERT 
+gen ghqlogLIKERT68=ln(ghqLIKERT68)
+gen ghqlogLIKERT63=ln(ghqLIKERT63)
+gen ghqlogLIKERT53=ln(ghqLIKERT53)
+
+* physical activity *
+
+gen exer53=exer99
+gen exer63=exer09
+gen exer68=exer14
+
+
+* replacing childhood cognition missing values with previous values *
+gen chldcog=cog8h
+replace chldcog=cog11h if chldcog==.
+replace chldcog=cog15h if chldcog==.
+summ chldcog
+
+* replacing childhood selfoprgansiation missing values with previous values *
+gen chldselforg=selforg13
+replace chldselforg=selforg15 if chldselforg==.
+summ chldselforg
+
+* psychosocial adversities*
+gen psychscr68=psychscr
+gen psychscr63=psychscr
+gen psychscr53=psychscr
+drop psychscr
+
+
+
+* sep * 
+gen SEP68=SEP
+gen SEP63=SEP
+gen SEP53=SEP
+drop SEP
+
+* educaiton * 
+gen educ26g68=educ26g
+gen educ26g63=educ26g
+gen educ26g53=educ26g
+drop educ26g
+
+* childhood cognition *
+gen chldcog68=chldcog
+gen chldcog63=chldcog
+gen chldcog53=chldcog
+drop chldcog
+
+* childhood self organisaiotn * 
+gen chldselforg68=chldselforg
+gen chldselforg63=chldselforg
+gen chldselforg53=chldselforg
+drop chldselforg
+
+* neighbouhoood cohesion * 
+gen neighbour68=neighbour
+gen neighbour63=neighbour
+gen neighbour53=neighbour
+drop neighbour
+
+* sex* 
+gen sex53=sex
+gen sex63=sex
+gen sex68=sex
+
+* fathers social class * 
+
+gen fsep53=class2x
+gen fsep63=class2x
+gen fsep68=class2x
+
+* inflammatory markers * 
+* c-reactive protein*
+gen crp53=crp
+gen crp63=crp
+gen crp68=crp
+* interluekin 6 *
+gen il53=il6
+gen il63=il6
+gen il68=il6
+
+
+*** SOCIAL SUPPORT ** 
+
+* positive functional social support * 
+gen posTOT=(frcd53+frcd63+frcd68+frfg53+frfg63+frfg68+frsh53+frsh63+frsh68)
+
+gen posSS53=(frcd53+frfg53+frsh53)
+gen posSS63=(frcd63+frfg63+frsh63)
+gen posSS68=(frcd68+frfg68+frsh68)
+
+* negative functional social support * 
+
+gen negTOT =(frcm53+frcm63+frcm68+frpr53+frpr63+frpr68+frwr53+frwr63+frwr68)
+gen negSS53=(frcm53+frpr53+frwr53)
+gen negSS63=(frcm63+frpr63+frwr63)
+gen negSS68=(frcm68+frpr68+frwr68)
+
+* total functional social support * 
+
+gen pnSS53XX = (frcd53+frfg53+frsh53+frcm53+frpr53+frwr53)
+gen pnSS63XX = (frcd63+frfg63+frsh63+frcm63+frpr63+frwr63)
+gen pnSS68XX = (frcd68+frfg68+frsh68+frcm68+frpr68+frwr68)
+
+zscore pnSS53XX pnSS63XX pnSS68XX
+
+gen pnSS53 = z_pnSS53XX
+gen pnSS63 = z_pnSS63XX
+gen pnSS68 = z_pnSS68XX
+
+
+
+drop sex 
+
+* adversity missingness **
+
+gen AM53 = adversityMISS
+gen AM63 = adversityMISS
+gen AM68 = adversityMISS
+
+
+****** DROPPED FROM SAMPLE i.e. MISSING 4+ ADVERSITIES AND MISSING GHQ **
+
+gen MISS53 = .
+replace MISS53 = 1 if (ghqMISS53 ==1 | AM53 >= 4)
+replace MISS53 = 0 if (ghqMISS53 == 0 & AM53 <= 3)
+
+gen MISS63 = .
+replace MISS63 = 1 if (ghqMISS63 ==1 | AM63 >= 4)
+replace MISS63 = 0 if (ghqMISS63 == 0 & AM63 <= 3)
+
+gen MISS68 = .
+replace MISS68 = 1 if (ghqMISS68 ==1 | AM68 >= 4)
+replace MISS68 = 0 if (ghqMISS68 == 0 & AM68 <= 3)
+
+*** missingness analysis ***
+
+foreach var of varlist sex53 exer53 SEP53 educ26g53 chldcog53 chldselforg53 pnSS53 neighbour53 {
+logistic MISS53  `var'
+}
+
+
+**********************************************************
+**dropping variables for MULTILEVEL MODELLING analysis *
+
+keep il53 il63 il68 crp53 crp63 crp68 tint53 tint63 tint68 maltrt53 maltrt63 maltrt68 psych53 psych63 psych68 div53 div63 div68 dpbi53 dpbi63 dpbi68 mpbi53 mpbi63 mpbi68 pdth53 pdth63 pdth68 sep53 sep63 sep68 AM53 AM63 AM68 pnSS53 pnSS63 pnSS68 posSS53 posSS63 posSS68 negSS53 negSS63 negSS68 fsep53 fsep63 fsep68 ghqLIKERT68 ghqLIKERT63 ghqLIKERT53 ghqlogLIKERT68 ghqlogLIKERT63 ghqlogLIKERT53 psychscr68 psychscr63 psychscr53 frcd68 frcm68 frfg68 frsh68 frwr68 frpr68 frcd53 frcm53 frfg53 frpr53 frsh53 frwr53 frcd63 frcm63 frfg63 frpr63 frsh63 frwr63 exer68 exer63 exer53 SEP68 SEP63 SEP53 educ26g68 educ26g63 educ26g53 chldcog68 chldcog63 chldcog53  chldselforg68 chldselforg63 chldselforg53 neighbour68 neighbour63 neighbour53 sex53 sex63 sex68 serno
+
+**** reshaping data ****
+
+reshape long crp il tint maltrt psych div dpbi mpbi pdth sep AM pnSS posSS negSS fsep ghqLIKERT ghqlogLIKERT psychscr frcd frfg frsh frwr frpr frcm exer SEP educ26g chldcog chldselforg neighbour sex, i(serno) j(age)
+
+* identifying which variables exist at each of the three ages *
+by serno, sort: gen select = _n==1
+by serno, sort: gen select2 = _n==2
+by serno, sort: gen select3 = _n==3
+
+
+mixed ghqlogLIKERT i.sex i.psychscr || serno:
+mixed ghqlogLIKERT i.sex psychscr || serno:
+mixed ghqlogLIKERT i.sex psychscr  posSS || serno:
+mixed ghqlogLIKERT i.sex c.psychscr##c.posSS || serno:
+mixed ghqlogLIKERT i.sex psychscr negSS || serno:
+mixed ghqlogLIKERT i.sex c.psychscr##c.negSS || serno:
+mixed ghqlogLIKERT i.sex psychscr exer || serno:
+mixed ghqlogLIKERT i.sex c.psychscr##c.exer || serno:
+mixed ghqlogLIKERT i.sex psychscr i.SEP || serno:
+mixed ghqlogLIKERT i.sex psychscr SEP || serno:
+* Check no SE gradient in GHQ for men or women   mixed ghqlogLIKERT psychscr i.sex##c.SEP || serno:
+mixed ghqlogLIKERT i.sex psychscr i.educ26g || serno:
+mixed ghqlogLIKERT i.sex psychscr educ26g || serno:
+* Check no educ gradient in GHQ for men or women   mixed ghqlogLIKERT psychscr i.sex##c.educ26g || serno:
+mixed ghqlogLIKERT i.sex psychscr chldcog || serno:
+mixed ghqlogLIKERT i.sex c.psychscr##c.chldcog || serno:
+mixed ghqlogLIKERT psychscr i.sex##c.chldcog || serno:
+mixed ghqlogLIKERT i.sex psychscr chldselforg || serno:
+mixed ghqlogLIKERT i.sex c.psychscr##c.chldselforg || serno:
+mixed ghqlogLIKERT i.sex psychscr neighbour || serno:
+mixed ghqlogLIKERT i.sex c.psychscr##c.neighbour || serno:
+
+* MULTIPLE IMPUTATION - 
+mi set wide
+mi register imputed il crp pnSS posSS negSS psychscr frcd frfg frsh frwr frpr frcm exer SEP educ26g ghqlogLIKERT chldcog chldselforg neighbour
+mi impute chained (ologit, include (sex)) psychscr exer SEP educ26g (regress, include (sex)) ghqlogLIKERT chldcog chldselforg neighbour il crp frcd frfg frsh frwr frpr frcm, add(2) rseed(4409) force
+
+* drop if missing GHQ data *
+drop if ghqlogLIKERT==.
+
+* drop if more than 3 or more psychosocial adversities are missing * 
+drop if AM>=3
+
+
+
+
+
+mi estimate: mixed ghqlogLIKERT i.sex psychscr  exer|| serno:
+
+
+*** analysis of each individual adversity with GHQ * 
+
+foreach var of varlist maltrt tint psych div mpbi dpbi pdth sep {
+mi estimate: mixed ghqlogLIKERT i.sex `var' || serno:
+}
+
+* mutiply adjusted for all individual adversity variables - with GHQ * 
+
+mi estimate: mixed ghqlogLIKERT i.sex maltrt tint psych div mpbi dpbi pdth sep || serno:
+
+
+
+********* resources and GHQ score *******
+
+foreach var of varlist exer SEP educ chldcog chldselforg pnSS neighbour{
+mi estimate: mixed ghqlogLIKERT i.sex `var' || serno:
+}
+
+
+*** ANALYSIS OF RESOURCES AS OUTCOMES AND ADVERSITY AS EXPOSUIRE * 
+
+
+* assessing proprtional odds assumption *
+omodel logit exer sex psychscr
+omodel logit SEP sex psychscr
+omodel logit educ sex psychscr
+
+* ologit for categirical vars * 
+
+
+mi estimate, or: ologit exer i.sex psychscr
+
+* mlogit for categoirical variables that violate proportional odds ratio * 
+
+mi estimate, rrr: mlogit SEP i.sex psychscr, base(1)
+mi estimate, rrr: mlogit educ i.sex psychscr, base(1)
+
+
+* for continuos vars *
+
+foreach var of varlist chldcog chldselforg pnSS neighbour {
+mi estimate: regress `var' i.sex psychscr
+}
+
+
+***** MODERATION ANALYSIS ********
+
+foreach var of varlist  exer SEP educ {
+mi estmiate: mixed ghqlogLIKERT i.sex c.psychscr##i.`var' || serno:
+}
+
+foreach var of varlist  chldcog chldselforg pnSS neighbour {
+mi estimate: mixed ghqlogLIKERT i.sex c.psychscr##c.`var' || serno:
+}
+
+**** resources table ****
+
+
+
+
+
