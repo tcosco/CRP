@@ -1870,6 +1870,17 @@ mi estimate: mixed ghqlogLIKERT i.sex c.psychscr##c.`var' || serno:
 **** resources table ****
 
 
+******* INFLAMMATION ANALAYSIS *****
+
+* relationship between ghq score and crp il6 *
+
+mi estimate: mixed ghqlogLIKERT i.sex crp || serno:
+
+mi estimate: mixed ghqlogLIKERT i.sex il || serno:
+
+
+
+
 
 
 
